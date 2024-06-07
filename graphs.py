@@ -6,11 +6,11 @@ def create_lineGraph(years, amountSaved):
     fig, ax = plt.subplots()
 
     #plot the data
-    ax.plot(years, amountSaved, marker='o')
+    ax.plot(years, amountSaved, marker='o', markerfacecolor='lightblue',color='black')
 
     #Name axis
     ax.set_xlabel('Years')
-    ax.set_ylabel('Balance ($)')
+    ax.set_ylabel('Balance (in Millions of $)')
     
     #add grid lines
     ax.grid(True)

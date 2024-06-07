@@ -4,27 +4,32 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Table, TableStyle, SimpleDocTemplate, Paragraph, Spacer, Image, PageTemplate, Frame
 import os
 
-def generate_pdf_report(filename, graphFileName, df, age, retirementAge):
+def generate_pdf_report(filename, graphFileName, df, age, retirementAge, percentContributed):
     # Create a document template
     doc = SimpleDocTemplate(filename, pagesize=letter)
     elements = []
     styles = getSampleStyleSheet()
     body_style = styles['BodyText']
+    title_style = styles['Title']
 
     # Add title
-    title_style = styles['Title']
     elements.append(Paragraph("The Power of Compound Interest", title_style))
+
+    #Add analysis on the graph
+    finalYear = df['Year'].iloc[-1]
+    finalAmountSaved = df ['End of Year Balance'].iloc[-1]
+    analysis = f"If you are currently {age} and, you expect to retire when you are {retirementAge} years old. You will be saving for {retirementAge-age} years. You will retire in the year <b>{finalYear}</b> with an expected balance of <b>{finalAmountSaved}</b>. This number is assuming you recieved a <b>3%</b> raise every year and your yearly rate of return was <b>6.5%</b>"
+    elements.append(Paragraph(analysis,body_style))
 
     # Add the line graph plot
     elements.append(Spacer(1, 12))
     img = Image(graphFileName, width=500, height=300)
     elements.append(img)
 
-    #Add analysis on the graph
-    finalYear = df['Year'].iloc[-1]
-    finalAmountSaved = df ['End of Year Balance'].iloc[-1]
-    analysis = f"If you are currently {age} and, you expect to retire when you are {retirementAge}. You will be saving for {retirementAge-age}. You will retire in the year <b>{finalYear}</b> with an expected balance of <b>{finalAmountSaved}</b>. This number is assuming you recieved a <b>3%</b> raise every year and your yearly rate of return was <b>9%</b>"
-    elements.append(Paragraph(analysis,body_style))
+    #Add a section describing the table
+    tableAnalysis = f"Below is a table where each row has the year, along with your yearly salary (assuming a 3% raise each year). The dollar value of your yearly contribution is based on contributing {percentContributed*100}% of your income. Finally, the balance of your nest egg is given, assuming you received a 6.5% return rate (the average return balance of a 401k)."
+    elements.append(Paragraph(tableAnalysis,body_style))
+
 
     # Add the DataFrame as a table
     elements.append(Spacer(1, 12))
