@@ -8,10 +8,9 @@ def create_lineGraph(years, amountSaved):
     #plot the data
     ax.plot(years, amountSaved, marker='o')
 
-    #set labels and title
+    #Name axis
     ax.set_xlabel('Years')
     ax.set_ylabel('Balance ($)')
-    ax.set_title('Investment Growth Over Time')
     
     #add grid lines
     ax.grid(True)

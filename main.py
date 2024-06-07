@@ -2,6 +2,7 @@ import graphs
 import table
 import report
 import interestCalculator
+import os
 
 
 def main():
@@ -12,14 +13,15 @@ def main():
     initialBalance = int(input("How much have you saved so far? ")) #get how much money they initally have to invest
     estimatedInterestRate= .09 # estimated amount of return.
 
-    years, annualSalary, yearlyContributions, endOfYearBalance =interestCalculator.interestCalculator(age, retirementAge, yearlySalary, contributions, estimatedInterestRate, initialBalance)
+    years, annualSalary, yearlyContributions, endOfYearBalance, duration =interestCalculator.interestCalculator(age, retirementAge, yearlySalary, contributions, estimatedInterestRate, initialBalance)
 
-    graphs.create_lineGraph(years, endOfYearBalance)
+    graphs.create_lineGraph(duration, endOfYearBalance)
     dataFrame = table.createPandasDataframe(years, annualSalary, yearlyContributions, endOfYearBalance)
-    report.generate_pdf_report( 'Compound_Interest.pdf','plot.png', 'Compound Interest Graph', dataFrame)
+    pdfName = 'Compound_intest.pdf'
+    report.generate_pdf_report( pdfName,'plot.png', dataFrame, age, retirementAge)
+
+    os.system(pdfName)
   
-
-
 
 if __name__ == "__main__":
     main()

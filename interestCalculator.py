@@ -1,3 +1,4 @@
+from datetime import datetime
 
 def interestCalculator(age, retirementAge, salary, percentContributed, interestRate, initialAmount=None):
     
@@ -6,16 +7,21 @@ def interestCalculator(age, retirementAge, salary, percentContributed, interestR
     annualSalary= []
     yearlyContributions = []
     endOfYearBalance = []
+    duration = []
 
     yearsToInvest = retirementAge-age
 
     #setting current amount equal to the initial amount
     currentBalance = initialAmount
 
-    for year in range(1,yearsToInvest+1):
+    currentYear = datetime.now().year
 
-        #Save the current year to a list
-        years.append(year)
+    for i in range(1,yearsToInvest+1):
+
+        duration.append(i)
+        #Add the current year to the years list, then increase the current year by 1.
+        years.append(currentYear)
+        currentYear = datetime.now().year + i
 
         #Calculate the yearly contribution by taking the person's yearly salary and multiplying it by the percentContributed 
         yearlyContribution = salary*percentContributed
@@ -28,8 +34,7 @@ def interestCalculator(age, retirementAge, salary, percentContributed, interestR
         #Update the current balance with the yearly contrivbution and compound interest
         currentBalance += yearlyContribution
         currentBalance *= (1+interestRate)
-        print(f"${currentBalance:,.2f}")
         #save the current balance to an end of year balance list
         endOfYearBalance.append(currentBalance)
 
-    return years, annualSalary, yearlyContributions, endOfYearBalance
+    return years, annualSalary, yearlyContributions, endOfYearBalance, duration

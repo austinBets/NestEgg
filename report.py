@@ -1,14 +1,10 @@
-import pandas as pd
-import graphs
-import table
 from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import Table, TableStyle, SimpleDocTemplate, Paragraph, Spacer, Image
+from reportlab.platypus import Table, TableStyle, SimpleDocTemplate, Paragraph, Spacer, Image, PageTemplate, Frame
 import os
 
-def generate_pdf_report(filename, graphFileName, title, df):
+def generate_pdf_report(filename, graphFileName, df, age, retirementAge):
     # Create a document template
     doc = SimpleDocTemplate(filename, pagesize=letter)
     elements = []
@@ -17,39 +13,34 @@ def generate_pdf_report(filename, graphFileName, title, df):
 
     # Add title
     title_style = styles['Title']
-    elements.append(Paragraph(title, title_style))
+    elements.append(Paragraph("The Power of Compound Interest", title_style))
 
-    # Add content
-    content = """
-This is a sample PDF report generated using Python and ReportLab.
-It includes a line graph generated using Matplotlib and a table from a pandas DataFrame.
-"""
-    elements.append(Paragraph(content, body_style))
-    elements.append(Spacer(1, 12))
-
-    # Add the plot image
-    elements.append(Spacer(1, 12))
-    elements.append(Paragraph('Line Graph:', title_style))
+    # Add the line graph plot
     elements.append(Spacer(1, 12))
     img = Image(graphFileName, width=500, height=300)
     elements.append(img)
 
     #Add analysis on the graph
-    final_year = df['Year'].iloc[-1]
-    final_amount_saved = df ['Amount Saved'].iloc[-1]
-    analysis = f"Looking over this information you will be saving funds for a total of {final_year} years. At the end of the final year the amount you will have saved is saved is <b>${final_amount_saved:,.2f}</b>."
+    finalYear = df['Year'].iloc[-1]
+    finalAmountSaved = df ['End of Year Balance'].iloc[-1]
+    analysis = f"If you are currently {age} and, you expect to retire when you are {retirementAge}. You will be saving for {retirementAge-age}. You will retire in the year <b>{finalYear}</b> with an expected balance of <b>{finalAmountSaved}</b>. This number is assuming you recieved a <b>3%</b> raise every year and your yearly rate of return was <b>9%</b>"
     elements.append(Paragraph(analysis,body_style))
 
     # Add the DataFrame as a table
     elements.append(Spacer(1, 12))
-    elements.append(Paragraph('Data Table:', title_style))
+    elements.append(Paragraph('Interest Compounded Yearly', title_style))
     elements.append(Spacer(1, 12))
 
     # Convert DataFrame to list of lists
     data = [df.columns.to_list()] + df.values.tolist()
 
+    #calculate column width
+    numCols = len(data[0])
+    colWidth = 500 / numCols
+    colWidths = [colWidth] * numCols
+
     # Create a table
-    table = Table(data)
+    table = Table(data, colWidths=colWidths)
     
     # Add style to the table
     style = TableStyle([
@@ -58,7 +49,7 @@ It includes a line graph generated using Matplotlib and a table from a pandas Da
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.white),
         ('GRID', (0, 0), (-1, -1), 1, colors.black)
     ])
     table.setStyle(style)
@@ -70,24 +61,3 @@ It includes a line graph generated using Matplotlib and a table from a pandas Da
 
     # Remove the temporary plot file
     os.remove(graphFileName)
-
-# Example usage
-# filename = "report_with_graph_and_table.pdf"
-# title = "Sample Report with Graph and Table"
-# content = """
-# This is a sample PDF report generated using Python and ReportLab.
-# It includes a line graph generated using Matplotlib and a table from a pandas DataFrame.
-# """
-# x_data = np.linspace(0, 10, 100)
-# y_data = np.sin(x_data)
-
-# year = [1,2,3,4,5,6,7,8,9,10,11,12]
-# amountSaved = [10000,20000,30000,40000,50000,60000,70000,80000,90000,100000,110000,120000]
-
-# dataframe = table.createPandasDataframe(year, amountSaved)
-
-# # Generate the plot and save it as an image file
-# graphs.create_lineGraph(year, amountSaved)
-# graphFileName = "plot.png"
-
-# generate_pdf_report(filename, graphFileName, title, content, dataframe)
